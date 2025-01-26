@@ -23,12 +23,16 @@ public class GrpcServerConfig {
     @Value("${grpc.server.port}")
     Integer grpcPort;
 
-    final GrpcImageServiceImpl grpcImageServiceImpl;
+    @NonFinal
+    @Value("${grpc.server.max.inbound.message.size.bytes}")
+    Integer maxInboundMessageSize;
+
+    GrpcImageServiceImpl grpcImageServiceImpl;
 
     @Bean
     public Server grpcServer() {
         Server server = NettyServerBuilder.forPort(grpcPort)
-                .maxInboundMessageSize(4 * 1024 * 1024)
+                .maxInboundMessageSize(maxInboundMessageSize)
                 .permitKeepAliveTime(5, TimeUnit.MINUTES)
                 .addService(grpcImageServiceImpl)
                 .build();

@@ -19,7 +19,7 @@ import ru.brombin.image_service.facade.ImageFacade;
 
 @Validated
 @RestController
-@RequestMapping("/api/images")
+@RequestMapping("/v1/images")
 @RequiredArgsConstructor
 @FieldDefaults(level= AccessLevel.PRIVATE, makeFinal=true)
 public class ImageController {

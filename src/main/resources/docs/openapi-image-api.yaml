@@ -1,0 +1,206 @@
+openapi: 3.0.3
+info:
+  title: Image API
+  description: API for image management
+  version: 1.0.0
+
+servers:
+  - url: /v1
+    description: Base API path
+
+paths:
+  /images:
+    post:
+      tags:
+        - images
+      summary: Upload image
+      description: Upload a new image to the system
+      operationId: uploadImage
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+                - incidentId
+                - fileName
+                - size
+                - type
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Image file (supported formats - JPG, PNG)
+                incidentId:
+                  type: integer
+                  format: int64
+                  description: ID of the incident
+                fileName:
+                  type: string
+                  description: Name of the file
+                size:
+                  type: integer
+                  format: int64
+                  description: Size of the file in bytes
+                type:
+                  type: string
+                  description: Type of the file
+      responses:
+        '201':
+          description: Image successfully uploaded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '413':
+          description: File size exceeds the limit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '415':
+          description: Unsupported file format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      tags:
+        - images
+      summary: Get all images
+      description: Returns a list of all available images
+      operationId: getAllImages
+      responses:
+        '200':
+          description: List of images successfully retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ImageDto'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /images/{id}:
+    get:
+      tags:
+        - images
+      summary: Get image by ID
+      description: Returns image information by its identifier
+      operationId: getImageById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Image identifier
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Image found successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageDto'
+        '404':
+          description: Image not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - images
+      summary: Delete image
+      description: Deletes an image by its identifier
+      operationId: deleteImage
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Image identifier
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Image successfully deleted
+        '404':
+          description: Image not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    ImageDto:
+      type: object
+      required:
+        - incidentId
+        - fileName
+        - size
+        - type
+      properties:
+        incidentId:
+          type: integer
+          format: int64
+          description: ID of the incident
+        fileName:
+          type: string
+          description: Name of the file
+        size:
+          type: integer
+          format: int64
+          description: Size of the file in bytes
+        type:
+          type: string
+          description: Type of the file
+
+    ErrorResponse:
+      type: object
+      required:
+        - message
+        - timestamp
+      properties:
+        message:
+          type: string
+          description: Error message
+        timestamp:
+          type: integer
+          format: int64
+          description: Timestamp of when the error occurred
