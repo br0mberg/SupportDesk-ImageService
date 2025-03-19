@@ -14,57 +14,19 @@ import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import ru.brombin.image_service.dto.DeleteImageRequest;
+import ru.brombin.image_service.properties.KafkaProperties;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.util.Map.entry;
+
 @Configuration
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class KafkaConfig {
 
-    @Value("${spring.kafka.bootstrap-servers}")
-    String bootstrapServers;
-
-    @Value("${spring.kafka.consumer.group-id}")
-    String groupId;
-
-    @Value("${spring.kafka.consumer.auto-offset-reset}")
-    String autoOffsetReset;
-
-    @Value("${spring.kafka.consumer.key-deserializer}")
-    String keyDeserializer;
-
-    @Value("${spring.kafka.consumer.value-deserializer}")
-    String valueDeserializer;
-
-    @Value("${spring.kafka.consumer.enable-auto-commit}")
-    Boolean enableAutoCommit;
-
-    @Value("${spring.kafka.consumer.max-poll-records}")
-    Integer maxPollRecords;
-
-    @Value("${spring.kafka.consumer.fetch-max-wait}")
-    Integer fetchMaxWait;
-
-    @Value("${spring.kafka.consumer.heartbeat-interval}")
-    Integer heartbeatInterval;
-
-    @Value("${spring.kafka.consumer.session-timeout}")
-    Integer sessionTimeout;
-
-    @Value("${spring.kafka.consumer.poll-timeout-ms}")
-    Long pollTimeout;
-
-    @Value("${spring.kafka.consumer.concurrency}")
-    Integer concurrency;
-
-    @Value("${spring.kafka.consumer.properties.spring.json.trusted.packages}")
-    String trustedPackages;
-
-    @Value("${spring.kafka.consumer.properties.spring.deserializer.value.delegate.class}")
-    String delegateClassName;
-
+    KafkaProperties kafkaProperties;
     DefaultErrorHandler kafkaErrorHandler;
 
     @Bean
@@ -76,29 +38,23 @@ public class KafkaConfig {
     public ConcurrentKafkaListenerContainerFactory<String, DeleteImageRequest> kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, DeleteImageRequest> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
-        factory.setConcurrency(concurrency);
-        factory.getContainerProperties().setPollTimeout(pollTimeout);
+        factory.setConcurrency(kafkaProperties.getConcurrency());
         factory.setCommonErrorHandler(kafkaErrorHandler);
         return factory;
     }
 
     @Bean
     public Map<String, Object> consumerConfigs() {
-        Map<String, Object> props = new HashMap<>();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
-        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffsetReset);
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, keyDeserializer);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, valueDeserializer);
-        props.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, delegateClassName);
-        props.put(JsonDeserializer.TRUSTED_PACKAGES, trustedPackages);
-        props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, DeleteImageRequest.class.getName());
-        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, enableAutoCommit);
-        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, maxPollRecords);
-        props.put(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, fetchMaxWait);
-        props.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, heartbeatInterval);
-        props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, sessionTimeout);
-
-        return props;
+        return Map.ofEntries(
+                entry(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers()),
+                entry(ConsumerConfig.GROUP_ID_CONFIG, kafkaProperties.getGroupId()),
+                entry(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, kafkaProperties.getAutoOffsetReset()),
+                entry(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, kafkaProperties.getKeyDeserializer()),
+                entry(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, kafkaProperties.getValueDeserializer()),
+                entry(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, kafkaProperties.getDelegateClassName()),
+                entry(JsonDeserializer.VALUE_DEFAULT_TYPE, DeleteImageRequest.class.getName()),
+                entry(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, kafkaProperties.getMaxPollRecords()),
+                entry(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, kafkaProperties.getSessionTimeout())
+        );
     }
 }

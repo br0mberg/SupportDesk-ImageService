@@ -23,7 +23,7 @@ public class KafkaImageConsumerImpl implements KafkaImageConsumer {
 
     @Override
     @KafkaListener(
-            topics = "${spring.kafka.topics.image}",
+            topics = "${spring.kafka.consumer.image.topic}",
             groupId = "${spring.kafka.consumer.group-id}",
             containerFactory = "kafkaListenerContainerFactory"
     )
