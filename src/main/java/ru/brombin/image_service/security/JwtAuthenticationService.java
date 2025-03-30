@@ -3,6 +3,7 @@ package ru.brombin.image_service.security;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,7 +19,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JwtAuthenticationService {
-    @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
+    @NonFinal
+    @Value("${spring.security.oauth2.resource.server.jwt.issuer-uri}")
     String issuerUri;
 
     JwtAuthenticationConverter jwtAuthenticationConverter;

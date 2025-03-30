@@ -8,16 +8,18 @@ import org.springframework.stereotype.Component;
 
 @Data
 @Component
-@FieldDefaults(level= AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @ConfigurationProperties(prefix = "spring.kafka.consumer")
-public class KafkaProperties {
+public class KafkaCustomProperties {
     String bootstrapServers;
     String groupId;
     String autoOffsetReset;
     String keyDeserializer;
     String valueDeserializer;
+    String valueDeserializerDelegate;
     Integer maxPollRecords;
-    Integer sessionTimeout;
+    Integer sessionTimeoutMs;
     Integer concurrency;
-    String delegateClassName;
+    Integer pollTimeout;
+    String imageTopic;
 }
