@@ -39,6 +39,7 @@
 		<protoc.version>3.25.1</protoc.version>
 		<grpc-spring.version>3.1.0.RELEASE</grpc-spring.version>
 		<kr.motd.maven.version>1.7.1</kr.motd.maven.version>
+		<io.micrometer.version>1.12.0</io.micrometer.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -145,6 +146,15 @@
 			<groupId>jakarta.annotation</groupId>
 			<artifactId>jakarta.annotation-api</artifactId>
 			<version>${jakarta.annotation-api.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+			<version>${io.micrometer.version}</version>
 		</dependency>
 	</dependencies>
 	<build>
