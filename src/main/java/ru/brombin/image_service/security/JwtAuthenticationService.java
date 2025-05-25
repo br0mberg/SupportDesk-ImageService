@@ -15,31 +15,42 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JwtAuthenticationService {
     @NonFinal
-    @Value("${spring.security.oauth2.resource.server.jwt.issuer-uri}")
+    @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
     String issuerUri;
 
     JwtAuthenticationConverter jwtAuthenticationConverter;
 
     public void authenticateJwt(String jwtToken) {
         try {
+            log.debug("Attempting to authenticate JWT token...");
             Jwt jwt = decodeJwt(jwtToken);
             SecurityContextHolder.getContext().setAuthentication(jwtAuthenticationConverter.convert(jwt));
-        } catch (Exception e) {
+            log.info("JWT token successfully authenticated.");
+        } catch (JwtException e) {
+            log.error("JWT authentication failed", e);
             throw new SecurityException("Невалидный или истекший JWT токен.", e);
+        } catch (Exception e) {
+            log.error("Unexpected error during JWT authentication", e);
+            throw new SecurityException("Ошибка в процессе аутентификации.", e);
         }
     }
 
     private Jwt decodeJwt(String jwtToken) {
         try {
+            log.debug("Decoding JWT token...");
             JwtDecoder jwtDecoder = JwtDecoders.fromIssuerLocation(issuerUri);
-
-            return jwtDecoder.decode(jwtToken);
+            Jwt jwt = jwtDecoder.decode(jwtToken);
+            log.debug("JWT token decoded successfully.");
+            return jwt;
         } catch (JwtException e) {
+            log.error("Error decoding JWT token", e);
             throw new SecurityException("Ошибка декодирования JWT токена.", e);
         }
     }
