@@ -29,15 +29,11 @@ public class KafkaImageConsumerImpl implements KafkaImageConsumer {
             containerFactory = "kafkaListenerContainerFactory"
     )
     public void consumeDeleteImageRequest(ConsumerRecord<String, DeleteImageRequest> record, Acknowledgment ack) {
-        try {
-            jwtAuthenticationService.authenticateJwt(extractJwtToken(record));
-            DeleteImageRequest deleteImageRequest = record.value();
-            processAndDeleteImage(deleteImageRequest);
+        jwtAuthenticationService.authenticateJwt(extractJwtToken(record));
+        DeleteImageRequest deleteImageRequest = record.value();
+        processAndDeleteImage(deleteImageRequest);
 
-            ack.acknowledge();
-        } catch (Exception e) {
-            log.error("Ошибка обработки сообщения. Offset НЕ будет зафиксирован. Kafka повторит доставку.", e);
-        }
+        ack.acknowledge();
     }
 
     private String extractJwtToken(ConsumerRecord<String, DeleteImageRequest> record) {
