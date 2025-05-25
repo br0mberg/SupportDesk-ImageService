@@ -34,28 +34,38 @@ public class KafkaConfig {
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaCustomProperties.getBootstrapServers());
         props.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaCustomProperties.getGroupId());
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, kafkaCustomProperties.getAutoOffsetReset());
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, kafkaCustomProperties.getKeyDeserializer());
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, kafkaCustomProperties.getValueDeserializer());
+
+        // Указываем ErrorHandlingDeserializer как основной десериализатор
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
+
+        // Указываем делегаты для ErrorHandlingDeserializer
+        props.put(ErrorHandlingDeserializer.KEY_DESERIALIZER_CLASS, StringDeserializer.class);
+        props.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, JsonDeserializer.class);
+
+        // Настройки JsonDeserializer
+        props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, DeleteImageRequest.class.getName());
+        props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
+
         props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, kafkaCustomProperties.getMaxPollRecords());
-        props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, kafkaCustomProperties.getSessionTimeoutMs());
-        
-        JsonDeserializer<DeleteImageRequest> valueDeserializer = new JsonDeserializer<>(DeleteImageRequest.class);
-        valueDeserializer.addTrustedPackages("*");
-        
-        return new DefaultKafkaConsumerFactory<>(
-            props,
-            new StringDeserializer(),
-            valueDeserializer
-        );
+
+        if (kafkaCustomProperties.getSessionTimeoutMs() != null) {
+            props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, kafkaCustomProperties.getSessionTimeoutMs());
+        }
+
+        // Убираем ручное создание JsonDeserializer
+        return new DefaultKafkaConsumerFactory<>(props);
     }
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, DeleteImageRequest> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, DeleteImageRequest> factory = 
-            new ConcurrentKafkaListenerContainerFactory<>();
+        log.info("Creating ConcurrentKafkaListenerContainerFactory");
+        ConcurrentKafkaListenerContainerFactory<String, DeleteImageRequest> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         factory.setConcurrency(kafkaCustomProperties.getConcurrency());
         factory.setCommonErrorHandler(kafkaErrorHandler);
+        log.info("KafkaListenerContainerFactory created successfully");
         return factory;
     }
 }
