@@ -27,7 +27,7 @@ public class KafkaImageConsumerImpl implements KafkaImageConsumer {
             groupId = "${spring.kafka.consumer.group-id}",
             containerFactory = "kafkaListenerContainerFactory"
     )
-    public void consumeDeleteImageRequest(ConsumerRecord<String, DeleteImageRequest> record) {
+    public void consumeDeleteImageRequest(ConsumerRecord<String, DeleteImageRequest> record, Acknowledgment ack) {
         try {
             jwtAuthenticationService.authenticateJwt(extractJwtToken(record));
             DeleteImageRequest deleteImageRequest = record.value();
