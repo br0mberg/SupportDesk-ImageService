@@ -12,6 +12,7 @@ import ru.brombin.image_service.dto.DeleteImageRequest;
 import ru.brombin.image_service.facade.ImageFacade;
 import ru.brombin.image_service.security.JwtAuthenticationService;
 import ru.brombin.image_service.util.exception.FileStorageException;
+import org.springframework.kafka.support.Acknowledgment;
 
 @Component
 @Slf4j
