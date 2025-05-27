@@ -19,7 +19,7 @@ public class KafkaErrorHandlerConfig {
             String key = record.key() != null ? (String) record.key() : "unknown-key";
             DeleteImageRequest value = (DeleteImageRequest) record.value();
 
-            kafkaTemplate.send("incident.media.command.image.delete-by-incident-id-dlt", key, value);
+            kafkaTemplate.send("iincident.media.command.image.delete-by-incident-id.dlt", key, value);
         });
     }
 }
