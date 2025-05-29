@@ -32,8 +32,6 @@ public class KafkaImageConsumerImpl implements KafkaImageConsumer {
         jwtAuthenticationService.authenticateJwt(extractJwtToken(record));
         DeleteImageRequest deleteImageRequest = record.value();
         processAndDeleteImage(deleteImageRequest);
-
-        ack.acknowledge();
     }
 
     private String extractJwtToken(ConsumerRecord<String, DeleteImageRequest> record) {
