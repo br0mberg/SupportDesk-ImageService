@@ -1,8 +1,18 @@
 openapi: 3.0.3
 info:
   title: Image API
-  description: API for image management
-  version: 1.0.0
+  description: |
+    API для управления изображениями. Позволяет загружать, получать и удалять изображения, связанные с инцидентами.
+  version: 0.0.1
+  contact:
+    name: Андрей Бромбин
+    email: andrey@brombin.ru
+  x-created-at: "2025-01-26"
+  x-updated-at: "2025-06-06"
+  x-related-specs:
+    - "https://github.com/br0mberg/SupportDesk-IncidentService/blob/master/src/main/resources/docs/openapi-incident-api.yaml"
+  x-method-version: "v1"
+
 
 servers:
   - url: /v1
