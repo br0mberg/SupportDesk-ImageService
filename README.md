@@ -1,6 +1,6 @@
 # 🖼️ Image Service
 
-📘 Habr статья: https://habr.com/ru/companies/ruvds/articles/912502/
+📘 [Habr статья](https://habr.com/ru/companies/ruvds/articles/912502/)
 
 ✉️ Email: andrey@brombin.ru
 
