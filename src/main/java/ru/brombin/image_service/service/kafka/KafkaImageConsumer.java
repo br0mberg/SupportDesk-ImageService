@@ -5,5 +5,5 @@ import ru.brombin.image_service.dto.DeleteImageRequest;
 import org.springframework.kafka.support.Acknowledgment;
 
 public interface KafkaImageConsumer {
-    void consumeDeleteImageRequest(ConsumerRecord<String, DeleteImageRequest> record, , Acknowledgment ack);
+    void consumeDeleteImageRequest(ConsumerRecord<String, DeleteImageRequest> record, Acknowledgment ack);
 }

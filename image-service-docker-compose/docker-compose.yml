@@ -1,8 +1,6 @@
-version: '3.8'
-
 services:
   image-postgres:
-    image: postgres:latest
+    image: postgres:16
     container_name: image-postgres
     environment:
       POSTGRES_USER: postgres
@@ -60,5 +58,5 @@ volumes:
 
 networks:
   support-network:
-    external: true
+    driver: bridge
     name: support-network
